@@ -1,0 +1,25 @@
+<!-- vue3 初体验 -->
+<!-- <div id="app">
+  <h3>{{title}}</h3>
+</div> -->
+<div id="app">
+  <h3>{{state.title}}</h3>
+</div>
+
+<script src="http://unpkg.com/vue@next"></script>
+
+<script>
+  const app = Vue.createApp({
+    // data() {
+    //   return {
+    //     title: 'hello, vue3!'
+    //   }
+    // }
+    setup() {
+      return {
+        state: Vue.reactive({ title: 'hello world!' })
+      }
+    }
+  })
+  app.mount('#app')
+</script>

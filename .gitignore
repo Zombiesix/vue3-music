@@ -3,6 +3,8 @@ node_modules
 /dist
 
 # documentations files
+/documentations/vue3-source/package.json
+/documentations/vue3-source/package-lock.json
 
 # local env files
 .env.local

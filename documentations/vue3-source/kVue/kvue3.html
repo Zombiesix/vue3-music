@@ -1,0 +1,97 @@
+<div id="app"></div>
+
+<!-- app = Vue.createApp({})    app.mount('#app') -->
+<script>
+  const Vue = {
+
+    createApp(options) {
+      const renderer = Vue.createRender({
+        // 跨平台兼容性，下面只做了 web 端
+        querySelector(selector) {
+          return document.querySelector(selector)
+        },
+        insert(child, parent, anchor) {
+          parent.insertBefore(child, anchor || null)
+        }
+      })
+
+      const app = renderer.createApp(options)
+      return app
+    },
+    
+    createRender({
+      querySelector, insert
+    }) {
+      return {
+        createApp(options) {
+          // 做创建 app 的初始化等其它操作
+          return {
+            mount(selector) {
+              const parent = querySelector(selector)
+
+              if (!options.render) {
+                options.render = this.compiler(parent.innerHTML)
+              }
+
+              if (options.setup) {
+                this.setupState = options.setup()
+              }
+              this.data = options.data()
+
+              this.proxy = new Proxy(this, {
+                get(target, key) {
+                  if (key in target.setupState) {
+                    return target.setupState[key]
+                  } else {
+                    return target.data[key]
+                  }
+                },
+                set(target, key, value) {
+                  if (key in target.setupState) {
+                    target.setupState[key] = value
+                  } else {
+                    target.data[key] = value
+                  }
+                }
+              })
+
+              // 执行渲染函数
+              // const el = options.render.call(options.data())
+              const el = options.render.call(this.proxy)
+              parent.innerHTML = ''
+              // parent.appendChild(el)
+              insert(el, parent)
+            },
+            
+            // 将 template 变为 render 函数，后面执行 render 函数即可真实 dom
+            compiler(template) {
+              return function render() {
+                const h3 = document.createElement('h3')
+                h3.textContent = this.title // 注意这里的 this 指向
+                return h3
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+</script>
+
+<script>
+  // 使用
+  const { createApp } = Vue
+  createApp({
+    data() {
+      return {
+        title: 'hello vue3'
+      }
+    },
+    setup() {
+      return {
+        title: 'tony'
+      }
+    }
+  }).mount('#app')
+</script>
