@@ -5,6 +5,7 @@ node_modules
 # documentations files
 /documentations/vue3-source/package.json
 /documentations/vue3-source/package-lock.json
+/documentations/全栈30期 vue3
 
 # local env files
 .env.local
